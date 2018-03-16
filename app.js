@@ -1,14 +1,19 @@
-
 var express =require('express');
 var bodyParser = require('body-parser');
 var path = require('path'); 
 var app = express (); 
+var expressvalidator = require('express-validator'); 
+var mongojs = require ('mongojs');
+var db = mongojs('customerapp', ['users']);
+
+
+
+
 
 /*var logger = function(req, res, next){
 	console.log('Logging, yo...');
 	next();
 }
-
 app.use(logger);
 */
 
@@ -40,7 +45,6 @@ var users = [
 	}
 ]
 
-
 //email that guy
 
 //view engine
@@ -49,11 +53,13 @@ app.set('views', path.join(__dirname, 'views'));
 
 //routes handler
 app.get('/', function(req, res){
-
-	res.render('index', {
+	db.users.find(function (err, docs) {
+res.render('index', {
 		title: 'Customers',
-		users:  users
+		users:  docs
 	});
+	})
+	
 
 });
 
