@@ -19,21 +19,27 @@ app.use(bodyParser.urlencoded({extended: false}));
 //Set static path
 app.use(express.static(path.join(__dirname, 'public')))
 
-/*var people = [
+var users = [
 	{
-		name:'Jeff',
-		age: 30
+		id:1,
+		first_name:'Jeff',
+		last_name: 'Doe',
+		email:'johndoe@gmail.com',
 	},
 	{
-		name:'Sara',
-		age:22
+		id:2,
+		first_name:'Sara',
+		last_name:'swartz',
+		email: 'saraswartz@gmail.com',
 	},
 	{
-		name:'Bilbo',
-		age: 35
+		id: 3,
+		first_name:'Jill',
+		last_name: 'Jackson',
+		email: 'jilljackson@gmail.com',
 	}
 ]
-*/
+
 
 //email that guy
 
@@ -43,7 +49,11 @@ app.set('views', path.join(__dirname, 'views'));
 
 //routes handler
 app.get('/', function(req, res){
-	res.render('index');
+
+	res.render('index', {
+		title: 'Customers',
+		users:  users
+	});
 
 });
 
