@@ -1,80 +1,74 @@
-var express =require('express');
-var bodyParser = require('body-parser');
-var path = require('path'); 
-var app = express (); 
-var expressvalidator = require('express-validator'); 
-var mongojs = require ('mongojs');
+var express = require("express");
+var bodyParser = require("body-parser");
+var path = require("path");
+var expressValidator = require("express-validator");
+var mongojs = require("mongojs");
 var db = mongojs('customerapp', ['users']);
+var ObjectId = mongojs.ObjectId;
 
+var app = express();
 
+app.set("view engine", "ejs");
+app.set('views', path.join(__dirname, "views"));
 
-
-
-/*var logger = function(req, res, next){
-	console.log('Logging, yo...');
-	next();
-}
-app.use(logger);
-*/
-
-//body parser middleware 
+//bodyParser Middleware
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 
-//Set static path
-app.use(express.static(path.join(__dirname, 'public')))
+//set Static path for things like server, css files, angular app, etc
+app.use(express.static(path.join(__dirname, "public")));
 
-var users = [
-	{
-		id:1,
-		first_name:'Jeff',
-		last_name: 'Doe',
-		email:'johndoe@gmail.com',
-	},
-	{
-		id:2,
-		first_name:'Sara',
-		last_name:'swartz',
-		email: 'saraswartz@gmail.com',
-	},
-	{
-		id: 3,
-		first_name:'Jill',
-		last_name: 'Jackson',
-		email: 'jilljackson@gmail.com',
-	}
-]
-
-//email that guy
-
-//view engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-//routes handler
-app.get('/', function(req, res){
-	db.users.find(function (err, docs) {
-res.render('index', {
-		title: 'Customers',
-		users:  docs
-	});
-	})
-	
-
+//setup global variables
+app.use(function(req, res, next){
+  res.locals.errors = null;
+  next();
 });
 
-app.post('/users/add', function(req, res){
-	var newUser = {
-		
-		first_name: req.body.first_name,
-		last_name: req.body.last_name,
-		email: req.body.email
-	}
-	console.log(newUser); 
+app.use(expressValidator());﻿
+
+app.get("/", function(req, res){
+  db.users.find(function(err, docs){
+
+  res.render("index", {
+    title: "Customers",
+    users: docs
+  });
+  });
 });
 
+app.post("/", function(req, res){
 
+  req.checkBody("firstName", "first name is required").notEmpty();
+  req.checkBody("lastName", "last name is required").notEmpty();
+  req.checkBody("email", "email is required").notEmpty();
+
+  var errors = req.validationErrors();
+
+  if(errors){
+    db.users.find(function (err, users) {
+    res.render("index", {
+      title: "Customers",
+      users: users,
+      errors: errors
+    });
+  });
+}
+ else {
+var newUser = {
+  firstName: req.body.firstName,
+  lastName: req.body.lastName,
+  email: req.body.email
+};
+db.users.insert(newUser);
+res.redirect("/");
+  }
+});
+
+app.delete('/users/delete/:id', function(req, res){
+db.users.remove({_id: ObjectId(req.params.id)});
+res.redirect('/');
+})
 
 app.listen(3000, function(){
-	console.log('server started on port 3000');
-})
+    console.log("Express App Started");
+});
