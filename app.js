@@ -43,7 +43,10 @@ app.post("/", function(req, res){
   req.checkBody("email", "email is required").notEmpty();
   req.checkBody("street", "street is required").notEmpty();
   req.checkBody("city", "city is required").notEmpty();
-  
+  req.checkBody("state", "state is required").notEmpty();
+  req.checkBody("country", "country is required").notEmpty();
+  req.checkBody("zip", "zipcode is required").notEmpty();
+  req.checkBody("phone", "phone number is required").notEmpty();
 
   var errors = req.validationErrors();
 
