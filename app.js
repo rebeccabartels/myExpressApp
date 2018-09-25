@@ -41,6 +41,9 @@ app.post("/", function(req, res){
   req.checkBody("firstName", "first name is required").notEmpty();
   req.checkBody("lastName", "last name is required").notEmpty();
   req.checkBody("email", "email is required").notEmpty();
+  req.checkBody("street", "street is required").notEmpty();
+  req.checkBody("city", "city is required").notEmpty();
+  
 
   var errors = req.validationErrors();
 
@@ -57,7 +60,8 @@ app.post("/", function(req, res){
 var newUser = {
   firstName: req.body.firstName,
   lastName: req.body.lastName,
-  email: req.body.email
+  email: req.body.email,
+  street: req.body.street
 };
 db.users.insert(newUser);
 res.redirect("/");
